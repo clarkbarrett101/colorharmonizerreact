@@ -8,55 +8,56 @@ function MainColorWheel(props) {
   const centerX = canvasRef.current?.width / 2;
   const centerY = canvasRef.current?.height / 2;
   const [hoveredSection, setHoveredSection] = useState(null);
+  const drawSection = (index) => {
+    const ctx = canvasRef.current.getContext("2d");
+    let startAngle = (index * 2 * Math.PI) / numSections;
+    let endAngle = ((index + 1) * 2 * Math.PI) / numSections;
+
+    if (hoveredSection !== null && index === hoveredSection) {
+      ctx.fillStyle = props.getColorForSection(index);
+      let expandedRadius = radius * 1.2;
+      startAngle = (index * 2 * Math.PI) / numSections;
+      endAngle = ((index + 1) * 2 * Math.PI) / numSections;
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.arc(centerX, centerY, expandedRadius, startAngle, endAngle);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = props.getColorForSection(index);
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    } else {
+      try {
+        let gradient = ctx.createRadialGradient(
+          centerX,
+          centerY,
+          0,
+          centerX,
+          centerY,
+          radius
+        );
+        gradient.addColorStop(0, "white");
+        gradient.addColorStop(0.65, props.getColorForSection(index));
+        gradient.addColorStop(1, props.getColorForSection(index, 35));
+        ctx.fillStyle = gradient;
+        ctx.strokeStyle = gradient;
+      } catch (e) {
+        ctx.fillStyle = props.getColorForSection(index);
+        ctx.strokeStyle = props.getColorForSection(index);
+      }
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+      ctx.closePath();
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+  };
 
   useEffect(() => {
     const ctx = canvasRef.current.getContext("2d");
 
-    const drawSection = (index) => {
-      let startAngle = (index * 2 * Math.PI) / numSections;
-      let endAngle = ((index + 1) * 2 * Math.PI) / numSections;
-
-      if (hoveredSection !== null && index === hoveredSection) {
-        ctx.fillStyle = props.getColorForSection(index);
-        let expandedRadius = radius * 1.2;
-        startAngle = (index * 2 * Math.PI) / numSections;
-        endAngle = ((index + 1) * 2 * Math.PI) / numSections;
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.arc(centerX, centerY, expandedRadius, startAngle, endAngle);
-        ctx.closePath();
-        ctx.fill();
-        ctx.strokeStyle = props.getColorForSection(index);
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      } else {
-        try {
-          let gradient = ctx.createRadialGradient(
-            centerX,
-            centerY,
-            0,
-            centerX,
-            centerY,
-            radius
-          );
-          gradient.addColorStop(0, "white");
-          gradient.addColorStop(0.65, props.getColorForSection(index));
-          gradient.addColorStop(1, props.getColorForSection(index, 35));
-          ctx.fillStyle = gradient;
-          ctx.strokeStyle = gradient;
-        } catch (e) {
-          ctx.fillStyle = props.getColorForSection(index);
-          ctx.strokeStyle = props.getColorForSection(index);
-        }
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-        ctx.closePath();
-        ctx.fill();
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
-    };
     function highlight(event) {
       document.body.style.overflow = "hidden";
       var rect = canvasRef.current.getBoundingClientRect();
@@ -158,7 +159,9 @@ function MainColorWheel(props) {
       }
     };
   }, [hoveredSection, props.colorA, props.colorB]);
-
+  for (let i = 0; i < numSections; i++) {
+    drawSection(i);
+  }
   return (
     <canvas
       style={{
