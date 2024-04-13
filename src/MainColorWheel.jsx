@@ -123,6 +123,7 @@ function MainColorWheel(props) {
       if (hoveredSection === null) {
         return;
       }
+      console.log(props.colorA, props.colorB, hoveredSection);
       if (props.colorA === hoveredSection) {
         props.setColorA(-1);
         return;
@@ -159,23 +160,27 @@ function MainColorWheel(props) {
       }
     };
   }, [hoveredSection, props.colorA, props.colorB]);
-  for (let i = 0; i < numSections; i++) {
-    drawSection(i);
+  function drawAllSections() {
+    for (let i = 0; i < numSections; i++) {
+      drawSection(i);
+    }
   }
   return (
-    <canvas
-      style={{
-        height: 500,
-        width: 500,
-        alignContent: "center",
-        justifyContent: "center",
-        display: "block",
-        margin: "auto",
-      }}
-      ref={canvasRef}
-      width={500}
-      height={500}
-    />
+    <>
+      <canvas
+        style={{
+          height: 500,
+          width: 500,
+          alignContent: "center",
+          justifyContent: "center",
+          display: "block",
+          margin: "auto",
+        }}
+        ref={canvasRef}
+        width={500}
+        height={500}
+      />
+    </>
   );
 }
 

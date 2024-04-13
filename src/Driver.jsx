@@ -1,4 +1,4 @@
-import { MainColorWheel, ColorScheme } from "./index";
+import { MainColorWheel, ColorScheme, ColorCamera } from "./index";
 import { useEffect, useState } from "react";
 
 function Driver() {
@@ -203,13 +203,21 @@ function Driver() {
   }
   return (
     <div style={getFlex()}>
+      <ColorCamera
+        setColorA={setColorA}
+        setColorB={setColorB}
+        colorA={colorA}
+        colorB={colorB}
+        numSections={numSections}
+      />
       <div style={{ width: 500, height: "100%", justifyContent: "flex-start" }}>
         <h1 style={{ color: "black", textAlign: "center" }}>
           Color Harmonizer
         </h1>
         <div style={{ fontSize: 24, color: "black", textAlign: "center" }}>
           Select any two colors and get harmonious color combinations that
-          include them both. Click color again to unselect.
+          include them both. Click color again to unselect. Or click on the
+          webcam video to select the target color.
         </div>
         <MainColorWheel
           colorA={colorA}
