@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Driver } from "./index";
+import { PaintSelector } from "./PaintSelector";
 
 function App() {
-  return <Driver />;
+  return <PaintSelector />;
 }
 
 export default App;
