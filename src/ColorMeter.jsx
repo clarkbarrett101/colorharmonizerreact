@@ -145,11 +145,9 @@ function ColorMeter() {
           width={sectionWidth * sNodes}
           height="canvasHeight"
           onMouseDown={() => setDown(true)}
-          onTouchUpInside={() => setDown(false)}
           onTouchMove={handleHover}
           onTouchEnd={() => setDown(false)}
           onTouchCancel={() => setDown(false)}
-          onTouchLeave={() => setDown(false)}
           onTouchStart={() => setDown(true)}
           onMouseUp={() => setDown(false)}
           onMouseMove={handleHover}
