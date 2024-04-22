@@ -64,7 +64,7 @@ const ColorCamera = (props) => {
     const constraints = {
       video: true,
       facingMode: {
-        exact: "environment",
+        exact: "user",
       },
     };
 
