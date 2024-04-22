@@ -1,9 +1,17 @@
-import { MainColorWheel, ColorScheme, ColorCamera } from "./index";
+import {
+  MainColorWheel,
+  ColorScheme,
+  ColorCamera,
+  PaintSelector,
+} from "./index";
 import { useEffect, useState } from "react";
+import { ChiqueLogo } from "./ChiqueLogo";
 
 function Driver() {
   const [colorA, setColorA] = useState(-1);
   const [colorB, setColorB] = useState(-1);
+  const [colorC, setColorC] = useState(-1);
+  const [colorD, setColorD] = useState(-1);
   const numSections = 36;
   function getColorForSection(index, lightness = 50) {
     return (
@@ -41,10 +49,12 @@ function Driver() {
       );
       output.push(
         <ColorScheme
-          schemes={[[colorA, invertColor(colorA), colorB, invertColor(colorB)]]}
+          schemes={[[colorA, colorB, invertColor(colorA), invertColor(colorB)]]}
           getColorForSection={getColorForSection}
           schemeName="Tetradic"
           key="tetradic"
+          setColorC={setColorC}
+          setColorD={setColorD}
         />
       );
       output.push(
@@ -52,20 +62,22 @@ function Driver() {
           schemes={[
             [
               colorA,
+              colorB,
               loopColor(colorA + numSections * 0.08),
               loopColor(colorB + 0.08 * numSections),
-              colorB,
             ],
             [
               colorA,
+              colorB,
               loopColor(colorA - numSections * 0.08),
               loopColor(colorB - 0.08 * numSections),
-              colorB,
             ],
           ]}
           getColorForSection={getColorForSection}
           schemeName="Double Split Complementary"
           key="double"
+          setColorC={setColorC}
+          setColorD={setColorD}
         />
       );
     } else {
@@ -73,22 +85,26 @@ function Driver() {
         output.push(
           <ColorScheme
             schemes={[
-              [colorA, invertColor(colorB), invertColor(colorA), colorB],
+              [colorA, colorB, invertColor(colorB), invertColor(colorA)],
             ]}
             getColorForSection={getColorForSection}
             schemeName="Tetradic"
             key="tetradic"
+            setColorC={setColorC}
+            setColorD={setColorD}
           />
         );
       } else {
         output.push(
           <ColorScheme
             schemes={[
-              [colorA, invertColor(colorB), colorB, invertColor(colorA)],
+              [colorA, colorB, invertColor(colorB), invertColor(colorA)],
             ]}
             getColorForSection={getColorForSection}
             schemeName="Double Split Complimentary"
             key="double"
+            setColorC={setColorC}
+            setColorD={setColorD}
           />
         );
       }
@@ -99,6 +115,8 @@ function Driver() {
             getColorForSection={getColorForSection}
             schemeName="Triadic"
             key="triadic"
+            setColorC={setColorC}
+            setColorD={setColorD}
           />
         );
       }
@@ -108,13 +126,15 @@ function Driver() {
           output.push(
             <ColorScheme
               schemes={[
-                [loopColor(middle - 1.5 * different), colorA, colorB],
+                [colorA, colorB, loopColor(middle - 1.5 * different)],
                 [colorA, colorB, middle],
-                [loopColor(middle + 1.5 * different), colorA, colorB],
+                [colorA, colorB, loopColor(middle + 1.5 * different)],
               ]}
               getColorForSection={getColorForSection}
               schemeName="Analogous"
               key="analogous"
+              setColorC={setColorC}
+              setColorD={setColorD}
             />
           );
         } else {
@@ -124,15 +144,19 @@ function Driver() {
               getColorForSection={getColorForSection}
               schemeName="Analogous"
               key="analogous"
+              setColorC={setColorC}
+              setColorD={setColorD}
             />
           );
         }
         output.push(
           <ColorScheme
-            schemes={[[colorA, invertColor(middle), colorB]]}
+            schemes={[[colorA, colorB, invertColor(middle)]]}
             getColorForSection={getColorForSection}
             schemeName="Split Complementary"
             key="split"
+            setColorC={setColorC}
+            setColorD={setColorD}
           />
         );
       } else if (diff > 40) {
@@ -140,24 +164,28 @@ function Driver() {
           output.push(
             <ColorScheme
               schemes={[
-                [colorA, loopColor(colorB + 2 * different), colorB],
+                [colorA, colorB, loopColor(colorB + 2 * different)],
                 [colorA, colorB, loopColor(colorA - 2 * different)],
               ]}
               getColorForSection={getColorForSection}
               schemeName="Split Complementary"
               key="split"
+              setColorC={setColorC}
+              setColorD={setColorD}
             />
           );
         } else {
           output.push(
             <ColorScheme
               schemes={[
-                [colorA, loopColor(colorA + 2 * different), colorB],
+                [colorA, colorB, loopColor(colorA + 2 * different)],
                 [colorA, colorB, loopColor(colorB - 2 * different)],
               ]}
               getColorForSection={getColorForSection}
               schemeName="Split Complementary"
               key="split"
+              setColorC={setColorC}
+              setColorD={setColorD}
             />
           );
         }
@@ -177,47 +205,44 @@ function Driver() {
     document.body.style.background =
       "linear-gradient(to right, " + color1 + ", " + color2 + ")";
   }
+  function startPaintSelector() {
+    if (colorA === -1 || colorB === -1) {
+      return;
+    }
+    if (colorC === -1) {
+      return;
+    }
+    return (
+      <>
+        <PaintSelector h={colorA * (360 / numSections)} key="paintfinderA" />
+        <PaintSelector h={colorB * (360 / numSections)} key="paintfinderB" />
+        <PaintSelector h={colorC * (360 / numSections)} key="paintfinderC" />
+        {colorD === -1 ? null : (
+          <PaintSelector h={colorD * (360 / numSections)} key="paintfinderD" />
+        )}
+      </>
+    );
+  }
 
   useEffect(() => {
     harmonize();
     backgroundColor();
+    startPaintSelector();
     document.body.style.overflow = "auto";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [colorA, colorB]);
-  function getFlex() {
-    if (document.body.clientWidth < document.body.clientHeight) {
-      return {
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-      };
-    } else {
-      return {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-      };
-    }
-  }
+  }, [colorA, colorB, colorC, colorD]);
   return (
-    <div style={getFlex()}>
-      <ColorCamera
-        setColorA={setColorA}
-        setColorB={setColorB}
-        colorA={colorA}
-        colorB={colorB}
-        numSections={numSections}
-      />
-      <div style={{ width: 500, height: "100%", justifyContent: "flex-start" }}>
+    <div>
+      <ChiqueLogo />
+      <div style={{ width: 500, height: "100%" }}>
         <h1 style={{ color: "black", textAlign: "center" }}>
           Color Harmonizer
         </h1>
         <div style={{ fontSize: 24, color: "black", textAlign: "center" }}>
           Select any two colors and get harmonious color combinations that
-          include them both. Click color again to unselect. Or click on the
-          webcam video to select the target color.
+          include them both. Click color again to unselect.
         </div>
         <MainColorWheel
           colorA={colorA}
@@ -229,6 +254,7 @@ function Driver() {
         />
       </div>
       <div>{harmonize()}</div>
+      {startPaintSelector()}
     </div>
   );
 }

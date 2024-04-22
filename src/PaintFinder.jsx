@@ -1,18 +1,40 @@
 import hslReference from "./hslReference";
 import masterList from "./masterList";
+import { Swatch } from "./Swatch";
 function PaintFinder(props) {
-  let reflist = hslReference[props.h * 100 + props.s * 10 + props.l];
+  const h = Math.round(props.hsl[0] / 10);
+  const s = Math.round(props.hsl[1] * 9);
+  const l = Math.round(props.hsl[2] * 9);
+
+  let reflist = hslReference[h * 100 + s * 10 + l];
+  console.log(h * 100 + s * 10 + l, reflist.length);
   let offset = 1;
-  while (reflist.length < 3) {
+  while (reflist.length < 1) {
     reflist = reflist.concat(
-      hslReference[props.h * 100 + props.s * 10 + props.l - offset],
-      hslReference[props.h * 100 + props.s * 10 + props.l + offset],
-      hslReference[props.h * 100 + (props.s + offset) * 10 + props.l],
-      hslReference[props.h * 100 + (props.s - offset) * 10 + props.l]
+      hslReference[h * 100 + s * 10 + clamp(l - offset)],
+      hslReference[h * 100 + s * 10 + clamp(l + offset)],
+      hslReference[h * 100 + clamp(s + offset) * 10 + l],
+      hslReference[h * 100 + clamp(s - offset) * 10 + l]
     );
+    console.log(1, reflist.length);
+    if (reflist.length < 1) {
+      reflist = reflist.concat(
+        hslReference[loopHue(h - offset) * 100 + s * 10 + l],
+        hslReference[loopHue(h + offset) * 100 + s * 10 + l]
+      );
+      console.log(2, reflist.length);
+    }
+    if (reflist.length === 1 && reflist[0] == undefined) {
+      reflist = [];
+    }
     offset++;
   }
-  console.log(reflist);
+  function clamp(value) {
+    return Math.max(0, Math.min(value, 9));
+  }
+  function loopHue(hue) {
+    return hue < 0 ? 360 + hue : hue >= 360 ? hue - 360 : hue;
+  }
   let paintList = [];
   for (let i = 0; i < reflist.length; i++) {
     paintList.push(masterList[reflist[i]]);
@@ -20,54 +42,25 @@ function PaintFinder(props) {
   function paintListItems() {
     let items = [];
     for (let i = 0; i < paintList.length; i++) {
-      items.push(swatch(paintList[i]));
+      if (paintList[i] === undefined) {
+        continue;
+      }
+      items.push(<Swatch color={paintList[i]} />);
     }
     return items;
   }
-  function swatch(color) {
-    return (
-      <div
-        style={{
-          backgroundColor: colorString(color),
-          width: 200,
-          height: 50,
-          color: "black",
-          textAlign: "center",
-          textJustify: "center",
-          paddingTop: 15,
-          fontSize: 16,
-        }}
-      >
-        {getColorName(color)}
-      </div>
-    );
-  }
-  function colorString(color) {
-    const r = color.rgb[0];
-    const g = color.rgb[1];
-    const b = color.rgb[2];
-    return "rgb(" + r + "," + g + "," + b + ")";
-  }
-  function getColorName(color) {
-    if (color.benmoore) {
-      console.log(color.benmoore);
-      return color.benmoore + "\n by Benjamin Moore";
-    } else if (color.sherwin) {
-      console.log(color.sherwin);
-      return color.sherwin + "\n by Sherwin Williams";
-    } else if (color.ppg) {
-      console.log(color.ppg);
-      return color.ppg + "\n by PPG / Glidden";
-    } else if (color.behr) {
-      console.log(color.behr);
-      return color.behr + "\n by Behr";
-    } else if (color.valspar) {
-      console.log(color.valspar);
-      return color.valspar + "\n by Valspar";
-    }
-  }
+
   return (
-    <div style={{ display: "flex", flexWrap: "wrap" }}>{paintListItems()}</div>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(5,200px)",
+        justifyContent: "center",
+        width: 1000,
+      }}
+    >
+      {paintListItems()}
+    </div>
   );
 }
 export { PaintFinder };

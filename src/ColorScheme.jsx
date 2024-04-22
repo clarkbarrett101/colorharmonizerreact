@@ -8,6 +8,8 @@ function ColorScheme(props) {
           colors={props.schemes[i]}
           getColorForSection={props.getColorForSection}
           key={"wheel" + props.schemeName + i}
+          setColorC={props.setColorC}
+          setColorD={props.setColorD}
         />
       );
     }

@@ -2,7 +2,15 @@ import React, { useEffect, useRef } from "react";
 function MiniColorWheel(props) {
   const canvasRef = useRef(null);
   const height = 200;
-
+  function handleOnClick(event) {
+    if (props.colors.length > 2) {
+      props.setColorC(props.colors[2]);
+      if (props.colors.length > 3) {
+        props.setColorD(props.colors[3]);
+      }
+    }
+  }
+  function highlight(event) {}
   useEffect(() => {
     canvasRef.current.height = height;
     canvasRef.current.width = height;
@@ -36,7 +44,18 @@ function MiniColorWheel(props) {
       ctx.stroke();
       ctx.fill();
     }
-  }, [props.colors, props.getColorForSection]);
+    if (canvasRef.current) {
+      canvasRef.current.addEventListener("mousemove", highlight);
+      canvasRef.current.addEventListener("click", handleOnClick);
+    }
+    return () => {
+      if (canvasRef.current) {
+        canvasRef.current.removeEventListener("mousemove", highlight);
+        canvasRef.current.removeEventListener("click", handleOnClick);
+      }
+    };
+  }, [props.colors]);
+
   return <canvas ref={canvasRef} />;
 }
 export { MiniColorWheel };
