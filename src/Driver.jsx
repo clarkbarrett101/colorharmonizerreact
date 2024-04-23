@@ -7,7 +7,7 @@ import {
 import { useEffect, useState } from "react";
 import { ChiqueLogo } from "./ChiqueLogo";
 
-function Driver() {
+function Driver(props) {
   const [colorA, setColorA] = useState(-1);
   const [colorB, setColorB] = useState(-1);
   const [colorC, setColorC] = useState(-1);
@@ -214,11 +214,35 @@ function Driver() {
     }
     return (
       <>
-        <PaintSelector h={colorA * (360 / numSections)} key="paintfinderA" />
-        <PaintSelector h={colorB * (360 / numSections)} key="paintfinderB" />
-        <PaintSelector h={colorC * (360 / numSections)} key="paintfinderC" />
+        <PaintSelector
+          h={colorA * (360 / numSections)}
+          key="paintfinderA"
+          style={paintSelectorStyle}
+          saveColor={props.saveColor}
+          removeColor={props.removeColor}
+        />
+        <PaintSelector
+          h={colorB * (360 / numSections)}
+          key="paintfinderB"
+          style={paintSelectorStyle}
+          saveColor={props.saveColor}
+          removeColor={props.removeColor}
+        />
+        <PaintSelector
+          h={colorC * (360 / numSections)}
+          key="paintfinderC"
+          style={paintSelectorStyle}
+          saveColor={props.saveColor}
+          removeColor={props.removeColor}
+        />
         {colorD === -1 ? null : (
-          <PaintSelector h={colorD * (360 / numSections)} key="paintfinderD" />
+          <PaintSelector
+            h={colorD * (360 / numSections)}
+            key="paintfinderD"
+            style={paintSelectorStyle}
+            saveColor={props.saveColor}
+            removeColor={props.removeColor}
+          />
         )}
       </>
     );
@@ -234,15 +258,20 @@ function Driver() {
     };
   }, [colorA, colorB, colorC, colorD]);
   return (
-    <div>
-      <ChiqueLogo />
-      <div style={{ width: 500, height: "100%" }}>
+    <div
+      style={{
+        flexDirection: "column",
+      }}
+    >
+      <div style={{ width: "100%", height: "100%" }}>
         <h1 style={{ color: "black", textAlign: "center" }}>
           Color Harmonizer
         </h1>
         <div style={{ fontSize: 24, color: "black", textAlign: "center" }}>
-          Select any two colors and get harmonious color combinations that
-          include them both. Click color again to unselect.
+          Select any two colors and get harmonious color schemes that include
+          them both. Click color again to unselect. Once you select a color
+          scheme you can then select a tone, tint, or shade of the color and see
+          a list of similar paints. Click on a paint to save it to your list.
         </div>
         <MainColorWheel
           colorA={colorA}
@@ -258,4 +287,7 @@ function Driver() {
     </div>
   );
 }
+const paintSelectorStyle = {
+  flexGrow: 1,
+};
 export { Driver };

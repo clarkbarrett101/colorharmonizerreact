@@ -54,12 +54,17 @@ function MainColorWheel(props) {
   };
 
   function highlight(event) {
+    console.log("highlight");
     const ctx = canvasRef.current.getContext("2d");
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = "auto";
     var rect = canvasRef.current.getBoundingClientRect();
-    var mouseX = event.clientX - rect.left;
-    var mouseY = event.clientY - rect.top;
-
+    if (touchDevice) {
+      var mouseX = event.touches[0].clientX - rect.left;
+      var mouseY = event.touches[0].clientY - rect.top;
+    } else {
+      var mouseX = event.clientX - rect.left;
+      var mouseY = event.clientY - rect.top;
+    }
     setHoveredSection(null);
     for (var i = 0; i < numSections; i++) {
       var startAngle = (i * 2 * Math.PI) / numSections;
@@ -141,19 +146,38 @@ function MainColorWheel(props) {
     const ctx = canvasRef.current.getContext("2d");
     drawAllSections(ctx);
     if (canvasRef.current) {
-      canvasRef.current.addEventListener("mousemove", highlight);
-      canvasRef.current.addEventListener("mouseleave", (event) => {
-        setHoveredSection(null);
-      });
-      canvasRef.current.addEventListener("click", handleOnClick);
+      if (touchDevice) {
+        console.log("touch device");
+        canvasRef.current.addEventListener("touchstart", highlight);
+        canvasRef.current.addEventListener("touchend", handleOnClick);
+        canvasRef.current.addEventListener("touchmove", highlight);
+        canvasRef.current.addEventListener("touchcancel", (event) => {
+          setHoveredSection(null);
+        });
+      } else {
+        canvasRef.current.addEventListener("click", handleOnClick);
+        canvasRef.current.addEventListener("mousemove", highlight);
+        canvasRef.current.addEventListener("mouseleave", (event) => {
+          setHoveredSection(null);
+        });
+      }
     }
     return () => {
       if (canvasRef.current) {
-        canvasRef.current.removeEventListener("mousemove", highlight);
-        canvasRef.current.removeEventListener("mouseleave", (event) => {
-          setHoveredSection(null);
-        });
-        canvasRef.current.removeEventListener("click", handleOnClick);
+        if (touchDevice) {
+          canvasRef.current.removeEventListener("touchstart", highlight);
+          canvasRef.current.removeEventListener("touchend", handleOnClick);
+          canvasRef.current.removeEventListener("touchmove", highlight);
+          canvasRef.current.removeEventListener("touchcancel", (event) => {
+            setHoveredSection(null);
+          });
+        } else {
+          canvasRef.current.removeEventListener("mousemove", highlight);
+          canvasRef.current.removeEventListener("mouseleave", (event) => {
+            setHoveredSection(null);
+          });
+          canvasRef.current.removeEventListener("click", handleOnClick);
+        }
       }
     };
   }, [drawAllSections]);
@@ -167,6 +191,11 @@ function MainColorWheel(props) {
     const ctx = canvasRef.current.getContext("2d");
     drawAllSections(ctx);
   }
+  const [touchDevice, setTouchDevice] = useState(false);
+  function detectTouch() {
+    setTouchDevice(true);
+    start();
+  }
   function startButton() {
     if (started) {
       return;
@@ -174,6 +203,7 @@ function MainColorWheel(props) {
     return (
       <button
         onClick={start}
+        onTouchStart={detectTouch}
         style={{
           position: "absolute",
           top: "50%",
@@ -189,6 +219,7 @@ function MainColorWheel(props) {
     <>
       {startButton()}
       <canvas
+        hidden={!started}
         style={{
           height: 500,
           width: 500,

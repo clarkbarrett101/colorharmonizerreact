@@ -119,6 +119,20 @@ function ColorMeter() {
     }
     draw([hctx, sctx, lctx]);
   }
+  function handleTouch(event) {
+    const hctx = hueRef.current.getContext("2d");
+    const sctx = saturationRef.current.getContext("2d");
+    const lctx = lightnessRef.current.getContext("2d");
+    const x = event.touches[0].clientX - event.target.offsetLeft;
+    if (event.target === hueRef.current) {
+      setHue(Math.floor(x / sectionWidth) * (360 / hNodes));
+    } else if (event.target === saturationRef.current) {
+      setSaturation(Math.ceil(x / sectionWidth) * (100 / sNodes) + 5);
+    } else if (event.target === lightnessRef.current) {
+      setLightness(Math.floor(x / sectionWidth) * (100 / lNodes) + 5);
+    }
+    draw([hctx, sctx, lctx]);
+  }
   function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
   }
@@ -134,9 +148,13 @@ function ColorMeter() {
         width={sectionWidth * hNodes}
         height={canvasHeight}
         onMouseDown={() => setDown(true)}
+        onTouchStart={() => setDown(true)}
         onMouseUp={() => setDown(false)}
+        onTouchEnd={() => setDown(false)}
         onMouseMove={handleHover}
+        onTouchMove={handleTouch}
         onMouseLeave={() => setDown(false)}
+        onTouchCancel={() => setDown(false)}
         style={styles.meterHue}
       ></canvas>
       <div style={styles.row}>
@@ -145,13 +163,13 @@ function ColorMeter() {
           width={sectionWidth * sNodes}
           height="canvasHeight"
           onMouseDown={() => setDown(true)}
-          onTouchMove={handleHover}
-          onTouchEnd={() => setDown(false)}
-          onTouchCancel={() => setDown(false)}
           onTouchStart={() => setDown(true)}
           onMouseUp={() => setDown(false)}
+          onTouchEnd={() => setDown(false)}
           onMouseMove={handleHover}
+          onTouchMove={handleTouch}
           onMouseLeave={() => setDown(false)}
+          onTouchCancel={() => setDown(false)}
           style={styles.meterSat}
         ></canvas>
         <canvas
@@ -159,9 +177,13 @@ function ColorMeter() {
           width={sectionWidth * lNodes}
           height="canvasHeight"
           onMouseDown={() => setDown(true)}
+          onTouchStart={() => setDown(true)}
           onMouseUp={() => setDown(false)}
+          onTouchEnd={() => setDown(false)}
           onMouseMove={handleHover}
+          onTouchMove={handleTouch}
           onMouseLeave={() => setDown(false)}
+          onTouchCancel={() => setDown(false)}
           style={styles.meterLit}
         ></canvas>
       </div>

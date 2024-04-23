@@ -6,8 +6,8 @@ function PaintFinder(props) {
   const s = Math.round(props.hsl[1] * 9);
   const l = Math.round(props.hsl[2] * 9);
 
+  console.log(h * 100 + s * 10 + l);
   let reflist = hslReference[h * 100 + s * 10 + l];
-  console.log(h * 100 + s * 10 + l, reflist.length);
   let offset = 1;
   while (reflist.length < 1) {
     reflist = reflist.concat(
@@ -45,7 +45,15 @@ function PaintFinder(props) {
       if (paintList[i] === undefined) {
         continue;
       }
-      items.push(<Swatch color={paintList[i]} />);
+      items.push(
+        <Swatch
+          color={paintList[i]}
+          saveColor={props.saveColor}
+          removeColor={props.removeColor}
+          saved={false}
+          key={"paint" + i}
+        />
+      );
     }
     return items;
   }
@@ -54,9 +62,8 @@ function PaintFinder(props) {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(5,200px)",
+        gridTemplateColumns: "repeat(6,160px)",
         justifyContent: "center",
-        width: 1000,
       }}
     >
       {paintListItems()}

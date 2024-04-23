@@ -1,4 +1,6 @@
-function Swatch({ color }) {
+import React, { useState } from "react";
+function Swatch(props) {
+  const [saved, setSaved] = useState(props.saved);
   function getBrandLogo(color) {
     const logo =
       color.brand === "Sherwin Williams"
@@ -22,23 +24,33 @@ function Swatch({ color }) {
           ? "./gliddenlogo.png"
           : "./gliddenlogoW.png"
         : "./logo.png";
-    return <img src={logo} alt={color.brand} style={{ width: 100 }} />;
+    return <img src={logo} alt={color.brand} style={{ width: 80 }} />;
+  }
+  function handleOnClick() {
+    if (saved) {
+      props.removeColor(props.color);
+      setSaved(false);
+    } else {
+      props.saveColor(props.color);
+      setSaved(true);
+    }
   }
   return (
     <div
       style={{
-        backgroundColor: color.hex,
-        width: 200,
-        height: 100,
-        color: color.hsl[2] > 0.5 ? "black" : "white",
+        backgroundColor: props.color.hex,
+        width: 160,
+        height: 80,
+        color: props.color.hsl[2] > 0.5 ? "black" : "white",
         textAlign: "center",
         textJustify: "center",
-        fontSize: 16,
+        fontSize: 12,
       }}
+      onClick={handleOnClick}
     >
-      <div style={{ fontSize: 20 }}>{color.name}</div>
+      <div style={{ fontSize: 16 }}>{props.color.name}</div>
       <div style={{ textJustify: "center" }}>
-        {getBrandLogo(color)}: {color.label}
+        {getBrandLogo(props.color)}: {props.color.label}
       </div>
     </div>
   );

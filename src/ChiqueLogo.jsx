@@ -1,12 +1,16 @@
 import React, { useEffect, useRef } from "react";
 function ChiqueLogo() {
   const canvas = useRef(null);
-  canvas.width = 150;
+  canvas.width = 100;
   canvas.height = canvas.width;
   const logo = new Image();
-  logo.src = "./chiqueLogo.svg";
+  const slogan = new Image();
+  slogan.src = "./slogan.svg";
+  logo.src = "./Asset 1.svg";
   const scalar = canvas.width / 100;
   logo.width = 100 * scalar;
+  logo.height = (155 / 555) * logo.width;
+  slogan.width = 100 * scalar;
   function drawShapes(ctx, shapes) {
     generateColors(Math.random() * 2);
     shapes.forEach((shape) => {
@@ -22,7 +26,13 @@ function ChiqueLogo() {
       ctx.closePath();
       ctx.fill();
     });
-    ctx.drawImage(logo, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(
+      logo,
+      0,
+      canvas.height / 2 - logo.height / 2,
+      logo.width,
+      logo.height
+    );
     requestAnimationFrame(() => drawShapes(ctx, shapes));
   }
 
@@ -88,15 +98,17 @@ function ChiqueLogo() {
         position: "absolute",
         top: 0,
         right: 0,
-        width: 150,
-        fontSize: 16,
-        lineHeight: 0.8,
-        fontStyle: "italic",
-        textAlign: "center",
+        width: 100,
+        height: 100,
       }}
     >
       <canvas ref={canvas} />
-      Asthetic Design Software
+      <img
+        src={slogan.src}
+        alt="Asthetic Design Software"
+        width={80}
+        style={{ top: -60, position: "relative", left: 10 }}
+      />
     </div>
   );
 }

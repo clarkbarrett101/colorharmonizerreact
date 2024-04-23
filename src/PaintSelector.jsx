@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { PaintFinder } from "./PaintFinder";
 function PaintSelector(props) {
   const canvasRef = useRef(null);
-  const height = 200;
+  const height = 150;
   const numSections = 5;
   const hue = props.h;
   const [hsl, setHSL] = useState([0, 0, 0]);
@@ -95,13 +95,19 @@ function PaintSelector(props) {
     if (hsl[0] === 0 && hsl[1] === 0 && hsl[2] === 0) {
       return;
     }
-    return <PaintFinder hsl={hsl} />;
+    return (
+      <PaintFinder
+        hsl={hsl}
+        saveColor={props.saveColor}
+        removeColor={props.removeColor}
+      />
+    );
   }
   return (
-    <>
-      <canvas ref={canvasRef} />
+    <div style={{ display: "flex" }}>
+      <canvas ref={canvasRef} style={{ height: 150 }} />
       {checkHSL()}
-    </>
+    </div>
   );
 }
 export { PaintSelector };
