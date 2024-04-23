@@ -193,8 +193,11 @@ function ColorMeter() {
 }
 const styles = {
   column: {
-    alignItems: "center",
-    position: "absolute",
+    justifyContent: "center",
+    display: "flex",
+    flexDirection: "column",
+    position: "relative",
+    backgroundColor: "gray", // white
     top: 0,
     left: 0,
   },

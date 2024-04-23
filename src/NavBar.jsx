@@ -59,7 +59,7 @@ function NavBar(props) {
           Paint Finder
         </button>
       </div>
-      {paintListItems()}
+      {/*paintListItems()*/}
     </div>
   );
 }

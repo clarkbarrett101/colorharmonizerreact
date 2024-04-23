@@ -2,14 +2,16 @@ import React, { useRef, useEffect, useState } from "react";
 import { ChiqueLogo } from "./ChiqueLogo";
 import * as tf from "@tensorflow/tfjs";
 import masterList from "./masterList";
+import PhotoUploader from "./PhotoUploader";
 import { Swatch } from "./Swatch";
 const ColorCamera = (props) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const [prediction, setPrediction] = useState(null);
+  const [prediction, setPrediction] = useState([]);
   const averageArea = 21;
   const offset = Math.floor(averageArea / 2);
   const [model, setModel] = useState(null);
+  const [photo, setPhoto] = useState(null);
   useEffect(() => {
     tf.loadLayersModel("./mymodel.json").then((model) => {
       setModel(model);
@@ -40,24 +42,84 @@ const ColorCamera = (props) => {
       Math.round(sync[1]),
       Math.round(sync[2]),
     ];
+    console.log(predicted);
     const color = findClosestRGB(predicted);
+    console.log(color);
     setPrediction(color);
   }
   function findClosestRGB(targetRGB) {
-    let closestRGB = null;
-    let minDifference = Number.MAX_VALUE;
+    let closestBM = null;
+    let bmDifference = Number.MAX_VALUE;
+    let closestSW = null;
+    let swDifference = Number.MAX_VALUE;
+    let closestPPG = null;
+    let ppgDifference = Number.MAX_VALUE;
+    let closestFB = null;
+    let fbDifference = Number.MAX_VALUE;
+    let closestBehr = null;
+    let behrDifference = Number.MAX_VALUE;
+    let closestValspar = null;
+    let valsparDifference = Number.MAX_VALUE;
     masterList.forEach((entry) => {
       let difference = 0;
+
       for (let i = 0; i < 3; i++) {
         difference += Math.abs(entry.rgb[i] - targetRGB[i]);
       }
-      if (difference < minDifference) {
-        closestRGB = entry;
-        minDifference = difference;
+      switch (entry.brand) {
+        case "Benjamin Moore":
+          if (difference < bmDifference) {
+            closestBM = entry;
+            bmDifference = difference;
+          }
+          break;
+        case "Sherwin Williams":
+          if (difference < swDifference) {
+            closestSW = entry;
+            swDifference = difference;
+          }
+          break;
+        case "PPG / Glidden":
+          if (difference < ppgDifference) {
+            closestPPG = entry;
+            ppgDifference = difference;
+          }
+          break;
+        case "Farrow and Ball":
+          if (difference < fbDifference) {
+            closestFB = entry;
+            fbDifference = difference;
+          }
+          break;
+        case "Behr":
+          if (difference < behrDifference) {
+            closestBehr = entry;
+            behrDifference = difference;
+          }
+          break;
+        case "Valspar":
+          if (difference < valsparDifference) {
+            closestValspar = entry;
+            valsparDifference = difference;
+          }
+          break;
       }
     });
-    document.body.style.backgroundColor = closestRGB.hex;
-    return closestRGB;
+    const allColors = [
+      closestBM,
+      closestSW,
+      closestPPG,
+      closestFB,
+      closestBehr,
+      closestValspar,
+    ];
+    for (let i = 0; i < allColors.length; i++) {
+      if (allColors[i] === null) {
+        allColors.splice(i, 1);
+      }
+    }
+    // document.body.style.backgroundColor = closestBM.hex;
+    return allColors;
   }
 
   useEffect(() => {
@@ -81,40 +143,57 @@ const ColorCamera = (props) => {
   useEffect(() => {
     const ctx = canvasRef.current.getContext("2d");
     processFrame(ctx, videoRef.current);
-  }, []);
+  }, [photo]);
   function processFrame(ctx, video) {
-    let canvas = canvasRef.current;
-    canvas.width = 720;
-    canvas.height = 480;
-    const videoAspectRatio = video.videoWidth / video.videoHeight;
-    const canvasAspectRatio = canvas.width / canvas.height;
-
-    let sourceWidth, sourceHeight, sourceX, sourceY;
-    if (videoAspectRatio > canvasAspectRatio) {
-      sourceWidth = video.videoHeight * canvasAspectRatio;
-      sourceHeight = video.videoHeight;
-      sourceX = (video.videoWidth - sourceWidth) / 2;
-      sourceY = 0;
+    if (photo) {
+      processPhoto(ctx, photo);
     } else {
-      sourceWidth = video.videoWidth;
-      sourceHeight = video.videoWidth / canvasAspectRatio;
-      sourceX = 0;
-      sourceY = (video.videoHeight - sourceHeight) / 2;
+      let canvas = canvasRef.current;
+      canvas.width = 720;
+      canvas.height = 480;
+      const videoAspectRatio = video.videoWidth / video.videoHeight;
+      const canvasAspectRatio = canvas.width / canvas.height;
+
+      let sourceWidth, sourceHeight, sourceX, sourceY;
+      if (videoAspectRatio > canvasAspectRatio) {
+        sourceWidth = video.videoHeight * canvasAspectRatio;
+        sourceHeight = video.videoHeight;
+        sourceX = (video.videoWidth - sourceWidth) / 2;
+        sourceY = 0;
+      } else {
+        sourceWidth = video.videoWidth;
+        sourceHeight = video.videoWidth / canvasAspectRatio;
+        sourceX = 0;
+        sourceY = (video.videoHeight - sourceHeight) / 2;
+      }
+      ctx.drawImage(
+        video,
+        sourceX,
+        sourceY,
+        sourceWidth,
+        sourceHeight,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+      drawCircle1(ctx);
+      drawCircle2(ctx);
     }
+    requestAnimationFrame(() => processFrame(ctx, video));
+  }
+  function processPhoto(ctx, photo) {
+    const photoBlob = new Image();
+    photoBlob.src = photo;
     ctx.drawImage(
-      video,
-      sourceX,
-      sourceY,
-      sourceWidth,
-      sourceHeight,
+      photoBlob,
       0,
       0,
-      canvas.width,
-      canvas.height
+      canvasRef.current.width,
+      canvasRef.current.height
     );
     drawCircle1(ctx);
     drawCircle2(ctx);
-    requestAnimationFrame(() => processFrame(ctx, video));
   }
   function colorString(rgb) {
     return "rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
@@ -177,11 +256,18 @@ const ColorCamera = (props) => {
   }
 
   function swatch(color) {
-    if (color == null) {
-      return;
+    let output = [];
+    for (let i = 0; i < color.length; i++) {
+      output.push(
+        <Swatch
+          color={color[i]}
+          key={"predict" + i}
+          saveColor={props.saveColor}
+          removeColor={props.removeColor}
+        />
+      );
     }
-    console.log(color);
-    return <Swatch color={color} />;
+    return output;
   }
 
   function colorString(color) {
@@ -248,6 +334,15 @@ const ColorCamera = (props) => {
   }
   function drawCircle1(ctx) {
     ctx.beginPath();
+    ctx.rect(
+      circle1.x - circle1.radius,
+      circle1.y - circle1.radius,
+      circle1.radius * 2,
+      circle1.radius * 2
+    );
+    ctx.strokeStyle = "white";
+    ctx.stroke();
+    ctx.beginPath();
     ctx.arc(circle1.x, circle1.y, circle1.radius, 0, Math.PI * 2);
     try {
       getColors(ctx);
@@ -262,10 +357,17 @@ const ColorCamera = (props) => {
     ctx.closePath();
   }
   function drawCircle2(ctx) {
+    getColors(ctx);
+    ctx.beginPath();
+    ctx.moveTo(circle2.x, circle2.y - 1.5 * circle2.radius);
+    ctx.lineTo(circle2.x, circle2.y + 1.5 * circle2.radius);
+    ctx.moveTo(circle2.x - 1.5 * circle2.radius, circle2.y);
+    ctx.lineTo(circle2.x + 1.5 * circle2.radius, circle2.y);
+    ctx.strokeStyle = "black";
+    ctx.stroke();
     ctx.beginPath();
     ctx.arc(circle2.x, circle2.y, circle2.radius, 0, Math.PI * 2);
     try {
-      getColors(ctx);
       ctx.fillStyle = colorString(circle2.color);
     } catch (error) {
       console.log(error);
@@ -276,6 +378,14 @@ const ColorCamera = (props) => {
     ctx.stroke();
     ctx.closePath();
   }
+  const handleFileInputChange = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setPhoto(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
 
   return (
     <div
@@ -284,14 +394,27 @@ const ColorCamera = (props) => {
         fontSize: 24,
         justifyItems: "center",
         color: "black",
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
       }}
     >
-      <ChiqueLogo />
-      <div style={{ fontSize: 36, color: "black" }}>AI Paint Identifier</div>
-      Place a sheet of white copy paper on the painted surface. Then click and
-      drag the white circle to the white area and the black circle to the
-      painted area. The AI will use the lightness and color of the two circles
-      to identify the paint color.
+      <div style={{ fontSize: 36, color: "black", margins: 30 }}>
+        AI Paint Identifier
+      </div>
+      <>
+        Place a sheet of white copy paper on the painted surface. Use the webcam
+        or upload a photo of the painted surface. Then click and drag the white
+        circle to the white area and the black circle to the painted area. The
+        AI will use the lightness and color of the white to identify the paint
+        color. It will provide the closest matches from different paint brands.
+      </>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleFileInputChange}
+        style={{ margins: 30 }}
+      />
       <video ref={videoRef} autoPlay hidden />
       <canvas
         ref={canvasRef}
@@ -299,8 +422,9 @@ const ColorCamera = (props) => {
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
         onMouseLeave={onMouseUp}
+        style={{ stretch: "both", width: 720, height: 480 }}
       />
-      {swatch(prediction)}
+      <div style={{ display: "flex" }}>{swatch(prediction)}</div>
     </div>
   );
 };

@@ -6,9 +6,9 @@ import { ColorCamera } from "./ColorCamera";
 import { Swatch } from "./Swatch";
 function App() {
   const allPages = {
-    PaintID: <ColorCamera />,
+    PaintID: <ColorCamera saveColor={saveColor} removeColor={removeColor} />,
     Driver: <Driver saveColor={saveColor} removeColor={removeColor} />,
-    ColorMeter: <ColorMeter />,
+    ColorMeter: <ColorMeter saveColor={saveColor} removeColor={removeColor} />,
   };
   document.body.style.width = "100%";
   const [currentPage, setCurrentPage] = useState(allPages.Driver);
@@ -26,7 +26,19 @@ function App() {
     setPaints(arr);
   }
   function setPage(page) {
-    setCurrentPage(allPages[page]);
+    switch (page) {
+      case 0:
+        setCurrentPage(allPages.PaintID);
+        break;
+      case 1:
+        setCurrentPage(allPages.Driver);
+        break;
+      case 2:
+        setCurrentPage(allPages.ColorMeter);
+        break;
+      default:
+        setCurrentPage(allPages.Driver);
+    }
   }
   return (
     <>
