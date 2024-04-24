@@ -12,6 +12,7 @@ const ColorCamera = (props) => {
   const offset = Math.floor(averageArea / 2);
   const [model, setModel] = useState(null);
   const [photo, setPhoto] = useState(null);
+  const [tracks, setTracks] = useState([]);
   useEffect(() => {
     tf.loadLayersModel("./mymodel.json").then((model) => {
       setModel(model);
@@ -124,9 +125,8 @@ const ColorCamera = (props) => {
 
   useEffect(() => {
     const constraints = {
-      video: true,
-      facingMode: {
-        exact: "user",
+      video: {
+        facingMode: "environment",
       },
     };
 
@@ -386,7 +386,13 @@ const ColorCamera = (props) => {
     };
     reader.readAsDataURL(file);
   };
-
+  function switchIcon() {
+    if (tracks.length > 1) {
+      return (
+        <img src={"./switchIcon.png"} style={{ width: 100, height: 100 }} />
+      );
+    }
+  }
   return (
     <div
       style={{
