@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useState } from "react";
 import { ChiqueLogo } from "./ChiqueLogo";
 import * as tf from "@tensorflow/tfjs";
 import masterList from "./masterList";
-import PhotoUploader from "./PhotoUploader";
 import { Swatch } from "./Swatch";
 const ColorCamera = (props) => {
   const videoRef = useRef(null);

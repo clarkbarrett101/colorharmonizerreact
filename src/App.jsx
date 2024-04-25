@@ -3,7 +3,6 @@ import { ColorMeter } from "./ColorMeter";
 import { Driver } from "./Driver";
 import { NavBar } from "./NavBar";
 import { ColorCamera } from "./ColorCamera";
-import { Swatch } from "./Swatch";
 function App() {
   const allPages = {
     PaintID: <ColorCamera saveColor={saveColor} removeColor={removeColor} />,
