@@ -3,11 +3,13 @@ import { ColorMeter } from "./ColorMeter";
 import { Driver } from "./Driver";
 import { NavBar } from "./NavBar";
 import { ColorCamera } from "./ColorCamera";
+import ColorMixer from "./ColorMixer";
 function App() {
   const allPages = {
     PaintID: <ColorCamera saveColor={saveColor} removeColor={removeColor} />,
     Driver: <Driver saveColor={saveColor} removeColor={removeColor} />,
     ColorMeter: <ColorMeter saveColor={saveColor} removeColor={removeColor} />,
+    ColorMixer: <ColorMixer />,
   };
   document.body.style.width = "100%";
   const [currentPage, setCurrentPage] = useState(allPages.Driver);
@@ -34,6 +36,9 @@ function App() {
         break;
       case 2:
         setCurrentPage(allPages.ColorMeter);
+        break;
+      case 3:
+        setCurrentPage(allPages.ColorMixer);
         break;
       default:
         setCurrentPage(allPages.Driver);

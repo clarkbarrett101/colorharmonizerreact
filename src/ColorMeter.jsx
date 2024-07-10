@@ -1,14 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { PaintFinder } from "./PaintFinder";
 import { ChiqueLogo } from "./ChiqueLogo";
+import { Hsluv } from "hsluv";
 function ColorMeter() {
   const hNodes = 24;
   const sNodes = 8;
   const lNodes = 16;
-  const sectionWidth = 40;
-  const radius = 15;
-  const barHeight = 10;
-  const canvasHeight = 100;
+  const sectionWidth = 80;
+  const radius = 30;
+  const barHeight = 20;
+  const canvasHeight = 200;
   const barStart = canvasHeight / 2 - barHeight / 2;
   const hueRef = useRef(null);
   const saturationRef = useRef(null);
@@ -22,9 +23,12 @@ function ColorMeter() {
     sctx.clearRect(0, 0, sectionWidth * sNodes, canvasHeight);
     lctx.clearRect(0, 0, sectionWidth * lNodes, canvasHeight);
     for (let i = 0; i < hNodes; i++) {
-      hctx.fillStyle = `hsl(${i * (360 / hNodes)}, ${saturation}%, ${
-        lightness + 5
-      }%)`;
+      const hsluv = new Hsluv();
+      hsluv.hsluv_h = i * (360 / hNodes);
+      hsluv.hsluv_s = saturation;
+      hsluv.hsluv_l = lightness;
+      hsluv.hsluvToHex();
+      hctx.fillStyle = hsluv.hex;
       hctx.fillRect(
         clamp(i, 0.5, hNodes) * sectionWidth,
         barStart,
@@ -43,7 +47,13 @@ function ColorMeter() {
       drawCircle(hctx, hue * ((sectionWidth * hNodes) / 360), canvasHeight / 2);
     }
     for (let i = 0; i < sNodes; i++) {
-      sctx.fillStyle = `hsl(${hue}, ${i * (100 / sNodes) + 5}%, ${lightness}%)`;
+      const hsluv = new Hsluv();
+      hsluv.hsluv_h = hue;
+      hsluv.hsluv_s = i * (100 / sNodes) + 5;
+      hsluv.hsluv_l = lightness;
+      hsluv.hsluvToHex();
+      sctx.fillStyle = hsluv.hex;
+
       sctx.fillRect(
         clamp(i, 0.5, sNodes) * sectionWidth,
         barStart,
@@ -66,9 +76,12 @@ function ColorMeter() {
       );
     }
     for (let i = 0; i < lNodes; i++) {
-      lctx.fillStyle = `hsl(${hue}, ${saturation + 5}%, ${
-        i * (100 / lNodes) + 5
-      }%)`;
+      const hsluv = new Hsluv();
+      hsluv.hsluv_h = hue;
+      hsluv.hsluv_s = saturation;
+      hsluv.hsluv_l = i * (100 / lNodes) + 5;
+      hsluv.hsluvToHex();
+      lctx.fillStyle = hsluv.hex;
       lctx.fillRect(
         clamp(i, 0.5, lNodes) * sectionWidth,
         barStart,
@@ -193,12 +206,13 @@ function ColorMeter() {
 }
 const styles = {
   column: {
-    justifyContent: "center",
+    height: "100%",
     display: "flex",
     flexDirection: "column",
-    position: "relative",
+    position: "absolute",
+    zIndex: 1,
     backgroundColor: "gray", // white
-    top: 0,
+    top: "10%",
     left: 0,
   },
   row: {

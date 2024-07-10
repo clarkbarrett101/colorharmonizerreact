@@ -11,6 +11,9 @@ function NavBar(props) {
   function setPagePaintFinder() {
     props.setPage(2);
   }
+  function setPageColorMixer() {
+    props.setPage(3);
+  }
   function paintListItems() {
     let items = [];
     for (let i = 0; i < props.paints.length; i++) {
@@ -57,6 +60,9 @@ function NavBar(props) {
         </button>
         <button onClick={setPagePaintFinder} style={buttonStyle}>
           Paint Finder
+        </button>
+        <button onClick={setPageColorMixer} style={buttonStyle}>
+          Color Mixer
         </button>
       </div>
       {/*paintListItems()*/}

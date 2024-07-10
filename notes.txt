@@ -1,0 +1,22 @@
+Red : 12
+H < X S > Y
+R-O : R= -H +S, Y = +H +S, B= -H -S 
+O-Y : -H+S, +H+S, +H-S
+Y-G : -H -S, -H +S, +H +S
+G-B : +H -S, -H +S, +H +S
+B-M : +H +S, -H -S, -H +S
+M-R : +H+S, +H-S, -H+S
+Orange : 49
+Yellow : 86
+Green: 176
+Blue : 266
+Magenta : 309
+0 : Vermilion : 49 > x > 12
+1 : Amber :86 > x > 49
+2 : Jade : 176 > x > 86
+3 : Turqouise : 266 > x > 176
+4 : Violet : 309 > x > 266
+5 : Rose : x > 309 || x < 12
+
+
+

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { PaintFinder } from "./PaintFinder";
+import { Hsluv } from "hsluv";
 function PaintSelector(props) {
   const canvasRef = useRef(null);
   const height = 150;
@@ -19,9 +20,12 @@ function PaintSelector(props) {
     const ctx = canvasRef.current.getContext("2d");
     for (let s = 0; s < numSections; s++) {
       for (let l = 0; l < numSections; l++) {
-        ctx.fillStyle = `hsl(${hue}, ${slValues[s][l][0] * 10}%, ${
-          slValues[s][l][1] * 10
-        }%)`;
+        const hsluv = new Hsluv();
+        hsluv.hsluv_h = hue;
+        hsluv.hsluv_s = slValues[s][l][0] * 10;
+        hsluv.hsluv_l = slValues[s][l][1] * 10;
+        hsluv.hsluvToHex();
+        ctx.fillStyle = hsluv.hex;
         ctx.fillRect(
           (s * height) / numSections,
           (l * height) / numSections,
@@ -53,9 +57,13 @@ function PaintSelector(props) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < numSections; i++) {
       for (let j = 0; j < numSections; j++) {
-        ctx.fillStyle = `hsl(${hue}, ${slValues[i][j][0] * 10}%, ${
-          slValues[i][j][1] * 10
-        }%)`;
+        const hsluv = new Hsluv();
+        hsluv.hsluv_h = hue;
+        hsluv.hsluv_s = slValues[i][j][0] * 10;
+        hsluv.hsluv_l = slValues[i][j][1] * 10;
+        hsluv.hsluvToHex();
+        ctx.fillStyle = hsluv.hex;
+
         ctx.fillRect(
           (i * height) / numSections,
           (j * height) / numSections,
@@ -80,7 +88,7 @@ function PaintSelector(props) {
     const y = event.clientY - rect.top;
     const s = Math.floor((x / height) * numSections);
     const l = Math.floor((y / height) * numSections);
-    const hsl = [hue, slValues[s][l][0] * 0.1, slValues[s][l][1] * 0.1];
+    const hsl = [hue, slValues[s][l][0] / 10, slValues[s][l][1] / 10];
     setHSL(hsl);
     console.log(hsl);
     ctx.strokeStyle = "black";
