@@ -1,0 +1,7 @@
+[Driver]-[NavBar]
+[Driver]-[SwatchBook]
+[Driver]-[_ColorFinder]
+[SwatchBook]<-[currentColor]<-[_ColorFinder]
+[_ColorFinder]-[Harmonizer]
+[_ColorFinder]-[Sliders]
+[_ColorFinder]-[Mixer]

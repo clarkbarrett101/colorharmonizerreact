@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-function Swatch(props) {
-  const [saved, setSaved] = useState(props.saved);
+function Swatch({ color, saveColor, removeColor, saved }) {
+  const [isSaved, setSaved] = useState(saved);
   function getBrandLogo(color) {
     const logo =
       color.brand === "Sherwin Williams"
@@ -27,35 +27,42 @@ function Swatch(props) {
     return <img src={logo} alt={color.brand} style={{ width: 80 }} />;
   }
   function handleOnClick() {
-    if (saved) {
-      props.removeColor(props.color);
+    if (isSaved) {
+      removeColor(color);
       setSaved(false);
     } else {
-      props.saveColor(props.color);
+      saveColor(color);
       setSaved(true);
     }
   }
   function rgbString(rgb) {
     return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
   }
-  return (
-    <div
-      style={{
-        backgroundColor: rgbString(props.color.rgb),
-        width: 160,
-        height: 80,
-        color: props.color.hsluv[2] > 50 ? "black" : "white",
-        textAlign: "center",
-        textJustify: "center",
-        fontSize: 12,
-      }}
-      onClick={handleOnClick}
-    >
-      <div style={{ fontSize: 16 }}>{props.color.name}</div>
-      <div style={{ textJustify: "center" }}>
-        {getBrandLogo(props.color)}: {props.color.label}
+
+  if (color === undefined) {
+    return <div></div>;
+  } else {
+    return (
+      <div
+        style={{
+          backgroundColor: rgbString(color.rgb),
+          width: 160,
+          height: 80,
+          color: color.hsluv[2] > 50 ? "black" : "white",
+          textAlign: "center",
+          textJustify: "center",
+          fontSize: 12,
+          borderRadius: 10,
+          zIndex: 100,
+        }}
+        onClick={handleOnClick}
+      >
+        <div style={{ fontSize: 16 }}>{color.name}</div>
+        <div style={{ textJustify: "center" }}>
+          {getBrandLogo(color)}: {color.label}
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 export { Swatch };

@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { PaintFinder } from "./PaintFinder";
 import { Hsluv } from "hsluv";
-function PaintSelector(props) {
+function PaintSelector({ saveColor, removeColor, h }) {
+  console.log("PaintSelector:" + saveColor, removeColor, h);
   const canvasRef = useRef(null);
   const height = 150;
   const numSections = 5;
-  const hue = props.h;
+  const hue = h;
   const [hsl, setHSL] = useState([0, 0, 0]);
   let slValues = new Array(numSections);
   for (let s = 0; s < numSections; s++) {
@@ -104,11 +105,7 @@ function PaintSelector(props) {
       return;
     }
     return (
-      <PaintFinder
-        hsl={hsl}
-        saveColor={props.saveColor}
-        removeColor={props.removeColor}
-      />
+      <PaintFinder hsl={hsl} saveColor={saveColor} removeColor={removeColor} />
     );
   }
   return (

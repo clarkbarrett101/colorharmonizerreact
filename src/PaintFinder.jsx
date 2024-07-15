@@ -2,15 +2,17 @@ import hslReference from "./hslReference";
 import masterList from "./masterList";
 import { Swatch } from "./Swatch";
 import { Hsluv } from "hsluv";
-function PaintFinder(props) {
-  const h = Math.round(props.hsl[0]);
-  const s = Math.round(props.hsl[1] * 100);
-  const l = Math.round(props.hsl[2] * 100);
+function PaintFinder({ saveColor, removeColor, hsl }) {
+  console.log("PaintFinder:", saveColor, removeColor, hsl);
+  const h = Math.round(hsl[0]);
+  const s = Math.round(hsl[1] * 100);
+  const l = Math.round(hsl[2] * 100);
 
   console.log(h * 100 + s * 10 + l);
   let paintList = [];
   let offset = 1;
   while (paintList.length < 5) {
+    paintList = [];
     for (let i = 0; i < masterList.length; i++) {
       const color = masterList[i].hsluv;
       if (
@@ -42,8 +44,8 @@ function PaintFinder(props) {
       items.push(
         <Swatch
           color={paintList[i]}
-          saveColor={props.saveColor}
-          removeColor={props.removeColor}
+          saveColor={saveColor}
+          removeColor={removeColor}
           saved={false}
           key={"paint" + i}
         />

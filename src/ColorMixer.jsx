@@ -363,15 +363,15 @@ export default function ColorMixer() {
     return (
       <div
         style={{
-          position: "absolute",
+          position: "relative",
           flex: 1,
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
           backgroundColor: RGBString(paintColor ? paintColor.rgb : [0, 0, 0]),
-          width: "100%",
-          height: "100%",
-          top: "5%",
+          width: "100vw",
+          height: "100vh",
+          top: "120px",
           flexDirection: "column",
           color: paintColor && paintColor.hsluv[2] > 50 ? "black" : "white",
         }}

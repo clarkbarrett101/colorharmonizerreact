@@ -7,7 +7,7 @@ import {
 import { useEffect, useState } from "react";
 import { ChiqueLogo } from "./ChiqueLogo";
 
-function Driver(props) {
+function Driver({ saveColor, removeColor }) {
   const [colorA, setColorA] = useState(-1);
   const [colorB, setColorB] = useState(-1);
   const [colorC, setColorC] = useState(-1);
@@ -218,30 +218,30 @@ function Driver(props) {
           h={colorA * (360 / numSections)}
           key="paintfinderA"
           style={paintSelectorStyle}
-          saveColor={props.saveColor}
-          removeColor={props.removeColor}
+          saveColor={saveColor}
+          removeColor={removeColor}
         />
         <PaintSelector
           h={colorB * (360 / numSections)}
           key="paintfinderB"
           style={paintSelectorStyle}
-          saveColor={props.saveColor}
-          removeColor={props.removeColor}
+          saveColor={saveColor}
+          removeColor={removeColor}
         />
         <PaintSelector
           h={colorC * (360 / numSections)}
           key="paintfinderC"
           style={paintSelectorStyle}
-          saveColor={props.saveColor}
-          removeColor={props.removeColor}
+          saveColor={saveColor}
+          removeColor={removeColor}
         />
         {colorD === -1 ? null : (
           <PaintSelector
             h={colorD * (360 / numSections)}
             key="paintfinderD"
             style={paintSelectorStyle}
-            saveColor={props.saveColor}
-            removeColor={props.removeColor}
+            saveColor={saveColor}
+            removeColor={removeColor}
           />
         )}
       </>

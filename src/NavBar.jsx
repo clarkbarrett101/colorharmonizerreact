@@ -14,24 +14,7 @@ function NavBar(props) {
   function setPageColorMixer() {
     props.setPage(3);
   }
-  function paintListItems() {
-    let items = [];
-    for (let i = 0; i < props.paints.length; i++) {
-      items.push(
-        <Swatch
-          color={props.paints[i]}
-          saveColor={props.saveColor}
-          removeColor={props.removeColor}
-          saved={true}
-          key={"paintLib" + i}
-        />
-      );
-    }
-    return items;
-  }
-  useEffect(() => {
-    paintListItems();
-  }, [props.paints]);
+
   return (
     <div
       style={{
@@ -39,6 +22,7 @@ function NavBar(props) {
         position: "fixed",
         height: 120,
         width: "100%",
+        zIndex: 100,
       }}
     >
       <ChiqueLogo />
@@ -52,9 +36,6 @@ function NavBar(props) {
           gap: 10,
         }}
       >
-        <button onClick={setPagePaintID} style={buttonStyle}>
-          AI Paint Identifier
-        </button>
         <button onClick={setPageColorWheel} style={buttonStyle}>
           Color Harmonizer
         </button>
@@ -65,7 +46,6 @@ function NavBar(props) {
           Color Mixer
         </button>
       </div>
-      {/*paintListItems()*/}
     </div>
   );
 }

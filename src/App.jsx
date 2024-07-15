@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ColorMeter } from "./ColorMeter";
 import { Driver } from "./Driver";
 import { NavBar } from "./NavBar";
 import { ColorCamera } from "./ColorCamera";
 import ColorMixer from "./ColorMixer";
+import SwatchBook from "./SwatchBook";
+import masterList from "./masterList";
 function App() {
   const allPages = {
     PaintID: <ColorCamera saveColor={saveColor} removeColor={removeColor} />,
@@ -13,7 +15,19 @@ function App() {
   };
   document.body.style.width = "100%";
   const [currentPage, setCurrentPage] = useState(allPages.Driver);
-  const [paints, setPaints] = useState([]);
+  const paintStart = masterList[Math.floor(Math.random() * masterList.length)];
+  const [paints, setPaints] = useState([paintStart]);
+  useEffect(() => {
+    for (let i = 0; i < paints.length; i++) {
+      for (let j = 0; j < paints.length; j++) {
+        if (i !== j && paints[i] === paints[j]) {
+          let arr = paints;
+          arr.splice(j, 1);
+          setPaints(arr);
+        }
+      }
+    }
+  }, [paints]);
   function saveColor(color) {
     let arr = paints;
     arr.push(color);
@@ -21,9 +35,7 @@ function App() {
   }
   function removeColor(color) {
     let arr = paints;
-    let index = arr.indexOf(color);
-    arr.splice(index, 1);
-    console.log(arr);
+    arr = arr.filter((paint) => paint !== color);
     setPaints(arr);
   }
   function setPage(page) {
@@ -53,6 +65,11 @@ function App() {
         removeColor={removeColor}
       />
       {currentPage}
+      <SwatchBook
+        swatches={paints}
+        saveColor={saveColor}
+        removeColor={removeColor}
+      />
     </>
   );
 }

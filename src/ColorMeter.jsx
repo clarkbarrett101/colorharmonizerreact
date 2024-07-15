@@ -2,21 +2,56 @@ import React, { useEffect, useRef, useState } from "react";
 import { PaintFinder } from "./PaintFinder";
 import { ChiqueLogo } from "./ChiqueLogo";
 import { Hsluv } from "hsluv";
-function ColorMeter() {
+function ColorMeter({ saveColor, removeColor }) {
+  const [lightness, setLightness] = useState(48.5);
+  const styles = {
+    column: {
+      height: "80vh",
+      display: "flex",
+      flexDirection: "column",
+      position: "relative",
+      zIndex: 0,
+      backgroundColor: getBG(),
+      top: "120px",
+      left: 0,
+    },
+    row: {
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    title: {
+      fontSize: 24,
+      top: 0,
+      position: "relative",
+      color: lightness < 35 ? "black" : "white",
+    },
+    description: {
+      fontSize: 16,
+      top: 0,
+      position: "relative",
+      color: lightness < 35 ? "black" : "white",
+    },
+    meterHue: {
+      marginBottom: 10,
+    },
+    meterSat: {},
+    meterLit: {},
+  };
   const hNodes = 24;
   const sNodes = 8;
   const lNodes = 16;
-  const sectionWidth = 80;
-  const radius = 30;
-  const barHeight = 20;
-  const canvasHeight = 200;
+  const sectionWidth = 40;
+  const radius = 15;
+  const barHeight = 10;
+  const canvasHeight = 100;
   const barStart = canvasHeight / 2 - barHeight / 2;
   const hueRef = useRef(null);
   const saturationRef = useRef(null);
   const lightnessRef = useRef(null);
   const [hue, setHue] = useState(0);
   const [saturation, setSaturation] = useState(92.5);
-  const [lightness, setLightness] = useState(48.5);
+
   const [down, setDown] = useState(false);
   const draw = ([hctx, sctx, lctx]) => {
     hctx.clearRect(0, 0, sectionWidth * hNodes, canvasHeight);
@@ -71,7 +106,7 @@ function ColorMeter() {
       sctx.fill();
       drawCircle(
         sctx,
-        (saturation - 5) * ((sectionWidth * sNodes) / 100) - sectionWidth,
+        (saturation - 5) * ((sectionWidth * sNodes) / 90) - sectionWidth,
         canvasHeight / 2
       );
     }
@@ -99,11 +134,14 @@ function ColorMeter() {
       lctx.fill();
       drawCircle(
         lctx,
-        (lightness - 5) * ((sectionWidth * lNodes) / 100),
+        (lightness - 5) * ((sectionWidth * lNodes) / 90),
         canvasHeight / 2
       );
     }
   };
+  function rgbString(rgb) {
+    return "rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
+  }
   function drawCircle(ctx, x, y) {
     ctx.beginPath();
     ctx.lineWidth = 3;
@@ -126,9 +164,9 @@ function ColorMeter() {
     if (event.target === hueRef.current) {
       setHue(Math.floor(x / sectionWidth) * (360 / hNodes));
     } else if (event.target === saturationRef.current) {
-      setSaturation(Math.ceil(x / sectionWidth) * (100 / sNodes) + 5);
+      setSaturation(Math.ceil(x / sectionWidth) * (90 / sNodes) + 5);
     } else if (event.target === lightnessRef.current) {
-      setLightness(Math.floor(x / sectionWidth) * (100 / lNodes) + 5);
+      setLightness(Math.floor(x / sectionWidth) * (90 / lNodes) + 5);
     }
     draw([hctx, sctx, lctx]);
   }
@@ -140,9 +178,9 @@ function ColorMeter() {
     if (event.target === hueRef.current) {
       setHue(Math.floor(x / sectionWidth) * (360 / hNodes));
     } else if (event.target === saturationRef.current) {
-      setSaturation(Math.ceil(x / sectionWidth) * (100 / sNodes) + 5);
+      setSaturation(Math.ceil(x / sectionWidth) * (90 / sNodes) + 5);
     } else if (event.target === lightnessRef.current) {
-      setLightness(Math.floor(x / sectionWidth) * (100 / lNodes) + 5);
+      setLightness(Math.floor(x / sectionWidth) * (90 / lNodes) + 5);
     }
     draw([hctx, sctx, lctx]);
   }
@@ -152,10 +190,10 @@ function ColorMeter() {
   return (
     <div style={styles.column}>
       <div style={styles.title}>Paint Finder:</div>
-      <>
+      <div style={styles.description}>
         Select the Hue, Tone, Tint, and Shade of the color you are looking for,
         and receive a list of all the paints that match closest to your color.
-      </>
+      </div>
       <canvas
         ref={hueRef}
         width={sectionWidth * hNodes}
@@ -200,40 +238,24 @@ function ColorMeter() {
           style={styles.meterLit}
         ></canvas>
       </div>
-      <PaintFinder hsl={[hue, saturation / 100, lightness / 100]} />
+      <PaintFinder
+        hsl={[hue, saturation / 100, lightness / 100]}
+        saveColor={saveColor}
+        removeColor={removeColor}
+      />
     </div>
   );
+
+  function getBG() {
+    if (lightness < 35) {
+      return "white";
+    } else {
+      return rgbString([
+        255 - 255 * ((lightness - 35) / 100),
+        255 - 255 * ((lightness - 35) / 100),
+        255 - 255 * ((lightness - 35) / 100),
+      ]);
+    }
+  }
 }
-const styles = {
-  column: {
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
-    position: "absolute",
-    zIndex: 1,
-    backgroundColor: "gray", // white
-    top: "10%",
-    left: 0,
-  },
-  row: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 24,
-    top: 0,
-    position: "relative",
-  },
-  description: {
-    fontSize: 16,
-    top: 0,
-    position: "relative",
-  },
-  meterHue: {
-    marginBottom: 10,
-  },
-  meterSat: {},
-  meterLit: {},
-};
 export { ColorMeter };
